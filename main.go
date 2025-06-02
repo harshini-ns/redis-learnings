@@ -23,5 +23,10 @@ func main() {
 	client := connectRedis()
 	ctx := context.Background()
 	dataTypes.SetKeyNX(ctx, client, "fop", "bar", 10*time.Second)
-	dataTypes.GetKey(ctx, client, "fwop")
+	dataTypes.SetKeyXX(ctx, client, "fop", "jaan", 10*time.Second)
+	dataTypes.GetKey(ctx, client, "fop")
+
+	listKey := "bikes:repairs"
+	dataTypes.PushToList(ctx, client, listKey, "bike:1", "bike:2", "bike:3")
+
 }

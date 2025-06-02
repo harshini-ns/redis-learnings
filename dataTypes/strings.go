@@ -20,6 +20,19 @@ func SetKeyNX(ctx context.Context, client *redis.Client, key, value string, ttl 
 	}
 }
 
+func SetKeyXX(ctx context.Context, client *redis.Client, key, value string, ttl time.Duration) {
+	ok, err := client.SetXX(ctx, key, value, ttl).Result()
+	if err != nil {
+		panic(err)
+	}
+	if ok {
+		fmt.Println("key is updated")
+	} else {
+		fmt.Println("key doesnt exists")
+	}
+
+}
+
 func GetKey(ctx context.Context, client *redis.Client, key string) {
 	val, err := client.Get(ctx, key).Result()
 	if err == redis.Nil {
