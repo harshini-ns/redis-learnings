@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"log"
 	"time"
 
 	"todo-app-redis-go/dataTypes"
@@ -27,6 +29,18 @@ func main() {
 	dataTypes.GetKey(ctx, client, "fop")
 
 	listKey := "bikes:repairs"
-	dataTypes.PushToList(ctx, client, listKey, "bike:1", "bike:2", "bike:3")
+	dataTypes.PushToList(ctx, client, listKey, "bike:19", "bike:29", "bike:38")
+
+	elements, err := dataTypes.GetListElements(ctx, client, listKey)
+	if err != nil {
+		log.Fatalf("Error retrieving list elements: %v", err)
+	}
+	fmt.Println("List elements:", elements)
+
+	val, err := dataTypes.PopFromList(ctx, client, listKey)
+	if err != nil {
+		log.Fatalf("Error popping from list: %v", err)
+	}
+	fmt.Println("Popped value:", val)
 
 }

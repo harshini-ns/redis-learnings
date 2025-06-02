@@ -19,3 +19,21 @@ func PushToList(ctx context.Context, client *redis.Client, key string, values ..
 	}
 	fmt.Printf("LPUSH: %d element(s) added to list '%s'\n", count, key)
 }
+
+func GetListElements(ctx context.Context, client *redis.Client, key string) ([]string, error) {
+	elements, err := client.LRange(ctx, key, 0, -1).Result()
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve list elements: %w", err)
+	}
+	return elements, nil
+}
+
+func PopFromList(ctx context.Context, client *redis.Client, key string) (string, error) {
+	val, err := client.LPop(ctx, key).Result()
+	if err == redis.Nil {
+		return "", nil
+	} else if err != nil {
+		return "", fmt.Errorf("failed to pop from list: %w", err)
+	}
+	return val, nil
+}
