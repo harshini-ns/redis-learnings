@@ -28,19 +28,27 @@ func main() {
 	dataTypes.SetKeyXX(ctx, client, "fop", "jaan", 10*time.Second)
 	dataTypes.GetKey(ctx, client, "fop")
 
+	//push is done
 	listKey := "bikes:repairs"
 	dataTypes.PushToList(ctx, client, listKey, "bike:19", "bike:29", "bike:38")
-
+	//get elements from the push action
 	elements, err := dataTypes.GetListElements(ctx, client, listKey)
 	if err != nil {
 		log.Fatalf("Error retrieving list elements: %v", err)
 	}
 	fmt.Println("List elements:", elements)
 
+	//pop is done
 	val, err := dataTypes.PopFromList(ctx, client, listKey)
 	if err != nil {
 		log.Fatalf("Error popping from list: %v", err)
 	}
 	fmt.Println("Popped value:", val)
+	//get elements after pop action
+	ele, err := dataTypes.GetListElements(ctx, client, listKey)
+	if err != nil {
+		log.Fatalf("Error retrieving list elements: %v", err)
+	}
+	fmt.Println("List elements after poppping:", ele)
 
 }
