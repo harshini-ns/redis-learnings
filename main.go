@@ -59,7 +59,7 @@ func main() {
 		}
 
 		if value == "" {
-			fmt.Println("No element retrieved; operation timed out.")
+			fmt.Println("no element retrieved, timed out.")
 		} else {
 			fmt.Printf("Popped value: %s\n", value)
 		}
