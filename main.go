@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"time"
-
 	"todo-app-redis-go/dataTypes"
 
 	"github.com/redis/go-redis/v9"
@@ -30,6 +29,7 @@ func main() {
 
 	//push is done
 	listKey := "bikes:repairs"
+
 	dataTypes.PushToList(ctx, client, listKey, "bike:19", "bike:29", "bike:38")
 	//get elements from the push action
 	elements, err := dataTypes.GetListElements(ctx, client, listKey)
@@ -49,6 +49,20 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error retrieving list elements: %v", err)
 	}
-	fmt.Println("List elements after poppping:", ele)
+	fmt.Println("after poppping:", ele)
+
+	//BRPOP
+	for i := 0; i < 5; i++ {
+		value, err := dataTypes.BlockRpop(ctx, client, listKey)
+		if err != nil {
+			log.Fatalf("Error during BRPOP: %v", err)
+		}
+
+		if value == "" {
+			fmt.Println("No element retrieved; operation timed out.")
+		} else {
+			fmt.Printf("Popped value: %s\n", value)
+		}
+	}
 
 }

@@ -3,6 +3,7 @@ package dataTypes
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -36,4 +37,18 @@ func PopFromList(ctx context.Context, client *redis.Client, key string) (string,
 		return "", fmt.Errorf("failed to pop from list: %w", err)
 	}
 	return val, nil
+}
+
+func BlockRpop(ctx context.Context, client *redis.Client, key string) (string, error) {
+	timeout := 10 * time.Second
+	result, err := client.BRPop(ctx, timeout, key).Result()
+
+	if err != nil {
+		if err == redis.Nil {
+			// Timeout occurred with no new elements
+			return "", nil
+		}
+		return "", fmt.Errorf("failed to BRPOP from list '%s': %w", key, err)
+	}
+	return result[1], nil
 }
