@@ -30,7 +30,7 @@ func main() {
 	//push is done
 	listKey := "bikes:repairs"
 
-	dataTypes.PushToList(ctx, client, listKey, "bike:19", "bike:29", "bike:38")
+	dataTypes.PushToList(ctx, client, listKey, "bike:19", "bike:29", "bike:777")
 	//get elements from the push action
 	elements, err := dataTypes.GetListElements(ctx, client, listKey)
 	if err != nil {
@@ -43,7 +43,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error popping from list: %v", err)
 	}
-	fmt.Println("Popped value:", val)
+	fmt.Println("Popped value from popFromList:", val)
 	//get elements after pop action
 	ele, err := dataTypes.GetListElements(ctx, client, listKey)
 	if err != nil {
@@ -51,10 +51,12 @@ func main() {
 	}
 	fmt.Println("after poppping:", ele)
 
+	//go routine
 	go PushNumberstoList(ctx, client, listKey)
 	//BRPOP
 	for i := 0; i < 5; i++ {
-		fmt.Println("BRPOP:Waiting for element...")
+		fmt.Println("BRPOP:Waiting for element at", time.Now().Format("15:04:05"))
+
 		value, err := dataTypes.BlockRpop(ctx, client, listKey)
 		if err != nil {
 			log.Fatalf("Error during BRPOP: %v", err)
@@ -64,6 +66,7 @@ func main() {
 			fmt.Println("BRPOP :no element retrieved, timed out.")
 		} else {
 			fmt.Printf("brpop: Popped value: %s\n", value)
+
 		}
 	}
 
@@ -71,8 +74,16 @@ func main() {
 
 func PushNumberstoList(ctx context.Context, client *redis.Client, listKey string) {
 	for i := 0; i <= 5; i++ {
-		fmt.Println("Pushing bikes to list...")
-		dataTypes.PushToList(ctx, client, listKey, "bike:10", "bike:88", "bike:90")
-		time.Sleep(20 * time.Second)
+		length, err := client.LLen(ctx, listKey).Result()
+		if err != nil {
+			log.Printf("Error checking list length: %v", err)
+		}
+		if length == 0 {
+			fmt.Println("no items available , Pushing items to list...")
+			fmt.Println("Pushing items at", time.Now().Format("15:04:05"))
+			dataTypes.PushToList(ctx, client, listKey, "bike:10", "bike:88", "bike:90")
+
+		}
+		time.Sleep(3 * time.Second)
 	}
 }
