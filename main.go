@@ -51,18 +51,28 @@ func main() {
 	}
 	fmt.Println("after poppping:", ele)
 
+	go PushNumberstoList(ctx, client, listKey)
 	//BRPOP
 	for i := 0; i < 5; i++ {
+		fmt.Println("BRPOP:Waiting for element...")
 		value, err := dataTypes.BlockRpop(ctx, client, listKey)
 		if err != nil {
 			log.Fatalf("Error during BRPOP: %v", err)
 		}
 
 		if value == "" {
-			fmt.Println("no element retrieved, timed out.")
+			fmt.Println("BRPOP :no element retrieved, timed out.")
 		} else {
-			fmt.Printf("Popped value: %s\n", value)
+			fmt.Printf("brpop: Popped value: %s\n", value)
 		}
 	}
 
+}
+
+func PushNumberstoList(ctx context.Context, client *redis.Client, listKey string) {
+	for i := 0; i <= 5; i++ {
+		fmt.Println("Pushing bikes to list...")
+		dataTypes.PushToList(ctx, client, listKey, "bike:10", "bike:88", "bike:90")
+		time.Sleep(20 * time.Second)
+	}
 }

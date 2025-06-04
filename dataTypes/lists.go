@@ -40,7 +40,7 @@ func PopFromList(ctx context.Context, client *redis.Client, key string) (string,
 }
 
 func BlockRpop(ctx context.Context, client *redis.Client, key string) (string, error) {
-	timeout := 10 * time.Second
+	timeout := 12 * time.Second
 	result, err := client.BRPop(ctx, timeout, key).Result()
 
 	if err != nil {
