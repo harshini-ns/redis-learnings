@@ -52,10 +52,33 @@ func main() {
 	}
 	fmt.Println("after poppping:", ele)
 
+	//set hash
+	hashFields := []string{
+		"model", "Deimos",
+		"brand", "Ergonom",
+		"type", "Enduro bikes",
+		"price", "4972",
+	}
+
+	err = dataTypes.HashSet(ctx, client, hashFields)
+	if err != nil {
+		log.Fatalf("Error adding hash: %v", err)
+	}
+	fmt.Println("Hash for bike:1000 set successfully")
+
+	//get hash all
+	hashElements, err := dataTypes.GetHash(ctx, client)
+	if err != nil {
+		fmt.Println("get hasg failed")
+	}
+	fmt.Println(" Retrieved hash contents:")
+	for field, value := range hashElements {
+		fmt.Printf("  %s = %s\n", field, value)
+	}
+
 	//go routine
 	go PushNumberstoList(ctx, client, listKey)
 	go BlockRpopFromList(ctx, client, listKey)
-
 	select {}
 }
 
