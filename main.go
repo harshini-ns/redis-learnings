@@ -29,6 +29,7 @@ func main() {
 
 	//push is done
 	listKey := "bikes:repairs"
+	list1 := "bikes:racing:usa"
 
 	client.Del(ctx, listKey)
 	dataTypes.PushToList(ctx, client, listKey, "bike:19", "bike:29", "bike:777")
@@ -75,6 +76,15 @@ func main() {
 	for field, value := range hashElements {
 		fmt.Printf("  %s = %s\n", field, value)
 	}
+
+	//set add
+	dataTypes.SetADD(ctx, client, list1, "bikes:24", "bikes:78")
+	//get set added elements
+	items, err := dataTypes.GetListElementsFromSetAdd(ctx, client, list1)
+	if err != nil {
+		log.Fatalf("Error retrieving list elements: %v", err)
+	}
+	fmt.Println("List elements:", items)
 
 	//go routine
 	go PushNumberstoList(ctx, client, listKey)
