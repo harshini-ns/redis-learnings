@@ -28,3 +28,15 @@ func GetSortedElementsFromSortedAdd(ctx context.Context, client *redis.Client, k
 	}
 
 }
+
+func GetReverseFromSortedSets(ctx context.Context, Client *redis.Client, key string) {
+	ele, err := Client.ZRevRange(ctx, key, 0, -1).Result()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Sorted elements in REVERSE '%s':\n", key)
+	for i := 0; i < len(ele); i++ {
+		z := ele[i]
+		fmt.Printf("Member: %s\n", z)
+	}
+}

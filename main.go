@@ -89,6 +89,7 @@ func main() {
 	//sorted set add
 	dataTypes.SortedSetAdd(ctx, client, "racer_scores")
 	dataTypes.GetSortedElementsFromSortedAdd(ctx, client, "racer_scores")
+	dataTypes.GetReverseFromSortedSets(ctx, client, "racer_scores")
 
 	//go routine
 	go PushNumberstoList(ctx, client, listKey)
