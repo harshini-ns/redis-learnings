@@ -22,7 +22,9 @@ func GetSortedElementsFromSortedAdd(ctx context.Context, client *redis.Client, k
 		panic(err)
 	}
 	fmt.Printf("Sorted elements in '%s':\n", key)
-	for _, z := range elements {
+	for i := 0; i < len(elements); i++ {
+		z := elements[i]
 		fmt.Printf("Member: %s, Score: %.0f\n", z.Member, z.Score)
 	}
+
 }
