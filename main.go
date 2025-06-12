@@ -86,6 +86,10 @@ func main() {
 	}
 	fmt.Println("List elements:", items)
 
+	//sorted set add
+	dataTypes.SortedSetAdd(ctx, client, "racer_scores")
+	dataTypes.GetSortedElementsFromSortedAdd(ctx, client, "racer_scores")
+
 	//go routine
 	go PushNumberstoList(ctx, client, listKey)
 	go BlockRpopFromList(ctx, client, listKey)

@@ -1,0 +1,28 @@
+package dataTypes
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/redis/go-redis/v9"
+)
+
+func SortedSetAdd(ctx context.Context, client *redis.Client, key string) {
+	count, err := client.ZAdd(ctx, "racer_scores", redis.Z{Member: "usa", Score: 10}, redis.Z{Member: "Prickett", Score: 14},
+		redis.Z{Member: "Castilla", Score: 12}).Result()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("ZAdd : %d elements added to sorted set '%s'\n", count, key)
+}
+
+func GetSortedElementsFromSortedAdd(ctx context.Context, client *redis.Client, key string) {
+	elements, err := client.ZRangeWithScores(ctx, key, 0, -1).Result()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Sorted elements in '%s':\n", key)
+	for _, z := range elements {
+		fmt.Printf("Member: %s, Score: %.0f\n", z.Member, z.Score)
+	}
+}
