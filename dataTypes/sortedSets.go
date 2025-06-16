@@ -8,7 +8,7 @@ import (
 )
 
 func SortedSetAdd(ctx context.Context, client *redis.Client, key string) {
-	count, err := client.ZAdd(ctx, "racer_scores", redis.Z{Member: "usa", Score: 10}, redis.Z{Member: "Prickett", Score: 14},
+	count, err := client.ZAdd(ctx, "racer_scores", redis.Z{Member: "usa", Score: 12}, redis.Z{Member: "Prickett", Score: 14},
 		redis.Z{Member: "Castilla", Score: 12}).Result()
 	if err != nil {
 		panic(err)
@@ -39,4 +39,19 @@ func GetReverseFromSortedSets(ctx context.Context, Client *redis.Client, key str
 		z := ele[i]
 		fmt.Printf("Member: %s\n", z)
 	}
+}
+
+func UsingZRangeByLex(ctx context.Context, Client *redis.Client, key string) {
+	item, err := Client.ZRangeByLex(ctx, key, &redis.ZRangeBy{
+		Min: "[A", Max: "[L",
+	}).Result()
+
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Lexicographically sorted elements in '%s' from A to L:\n", key)
+	for i := 0; i < len(item); i++ {
+		fmt.Println(item[i])
+	}
+
 }

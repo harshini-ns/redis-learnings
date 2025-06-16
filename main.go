@@ -6,6 +6,7 @@ import (
 	"log"
 	"time"
 	"todo-app-redis-go/dataTypes"
+	"todo-app-redis-go/interactwithpubsub"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -90,6 +91,14 @@ func main() {
 	dataTypes.SortedSetAdd(ctx, client, "racer_scores")
 	dataTypes.GetSortedElementsFromSortedAdd(ctx, client, "racer_scores")
 	dataTypes.GetReverseFromSortedSets(ctx, client, "racer_scores")
+	dataTypes.UsingZRangeByLex(ctx, client, "racer_scores")
+
+	//pubsub
+	go interactwithpubsub.SubscribeToChannel(ctx, client, "auto-channel")
+	go interactwithpubsub.SubscribeToChannel(ctx, client, "bike-channel")
+	time.Sleep(10 * time.Second)
+	go interactwithpubsub.PublishMessage(ctx, client, "auto-channel", "auto 1998 is out of delivery")
+	go interactwithpubsub.PublishMessage(ctx, client, "bike-channel", "bike no 12 is out of delivery")
 
 	//go routine
 	go PushNumberstoList(ctx, client, listKey)
