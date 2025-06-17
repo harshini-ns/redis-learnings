@@ -18,11 +18,18 @@ func PublishMessage(ctx context.Context, client *redis.Client, channel string, m
 func SubscribeToChannel(ctx context.Context, client *redis.Client, channel string) {
 	pubsub := client.Subscribe(ctx, channel)
 
-	// Wait for confirmation that subscription is created
 	_, err := pubsub.Receive(ctx)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("Subscribed to channel: %s\n", channel)
+
+	for {
+		message, err := pubsub.ReceiveMessage(ctx)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("listening ", message.Channel, message.Payload)
+	}
 
 }
