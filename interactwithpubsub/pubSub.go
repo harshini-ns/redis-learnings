@@ -12,10 +12,11 @@ func PublishMessage(ctx context.Context, client *redis.Client, channel string, m
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Published: %s to channel: %s\n", message, channel)
+	fmt.Println("Published:", message, "to channel:", channel)
+
 }
 
-func SubscribeToChannel(ctx context.Context, client *redis.Client, channel string) {
+func SubscribeToChannel(ctx context.Context, client *redis.Client, channel string, msgChan chan string) {
 	pubsub := client.Subscribe(ctx, channel)
 
 	_, err := pubsub.Receive(ctx)
@@ -29,7 +30,8 @@ func SubscribeToChannel(ctx context.Context, client *redis.Client, channel strin
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("listening ", message.Channel, message.Payload)
+		msg := fmt.Sprintf("listening %s: %s", message.Channel, message.Payload)
+		msgChan <- msg
 	}
 
 }

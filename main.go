@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"sync"
 	"time"
 	"todo-app-redis-go/dataTypes"
 	"todo-app-redis-go/interactwithpubsub"
@@ -94,16 +95,34 @@ func main() {
 	dataTypes.UsingZRangeByLex(ctx, client, "racer_scores")
 
 	//pubsub
-	go interactwithpubsub.SubscribeToChannel(ctx, client, "auto-channel")
-	go interactwithpubsub.SubscribeToChannel(ctx, client, "bike-channel")
-	time.Sleep(10 * time.Second)
+	msgChan := make(chan string, 10)
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		interactwithpubsub.SubscribeToChannel(ctx, client, "bike-channel", msgChan)
+	}()
+
+	go func() {
+		defer wg.Done()
+		interactwithpubsub.SubscribeToChannel(ctx, client, "auto-channel", msgChan)
+	}()
+
+	go func() {
+		for msg := range msgChan {
+			fmt.Println("Received from Go channel:", msg)
+		}
+	}()
+	// go interactwithpubsub.SubscribeToChannel(ctx, client, "auto-channel")
+	// go interactwithpubsub.SubscribeToChannel(ctx, client, "bike-channel")
+	time.Sleep(2 * time.Second)
 	go interactwithpubsub.PublishMessage(ctx, client, "auto-channel", "auto 1998 is out of delivery")
 	go interactwithpubsub.PublishMessage(ctx, client, "bike-channel", "bike no 12 is out of delivery")
 
 	//go routine
-	go PushNumberstoList(ctx, client, listKey)
-	go BlockRpopFromList(ctx, client, listKey)
-	select {}
+	// go PushNumberstoList(ctx, client, listKey)
+	// go BlockRpopFromList(ctx, client, listKey)
+	wg.Wait()
 }
 
 func PushNumberstoList(ctx context.Context, client *redis.Client, listKey string) {
